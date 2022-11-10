@@ -2,7 +2,8 @@
 
 date_default_timezone_set('Europe/Paris');
 
-$key = 'API_KEY';
+$keyIDFM = 'API_KEY';
+$keyNavitia = 'API_KEY';
 
 $host_name      = 'DB_HOSTNAME';
 $db_username    = 'DB_USERNAME';
