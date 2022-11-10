@@ -53,6 +53,9 @@ $transilien = array(
     'U' => 'C01741',
 );
 
+$allTransports = ['metro', 'rer', 'tramway', 'transilien'];
+$allLines = [['1', '2', '3', '3bis', '4', '5', '6', '7','7bis', '8', '9', '10', '11', '12', '13', '14'], ['A', 'B', 'C', 'D', 'E'], ['1', '2', '3a', '3b', '4', '5', '6', '7', '8', '9', '11', '13'], ['H', 'J', 'K', 'L', 'N', 'P', 'R', 'U']];
+
 function keyToLowerArr($arr){
     return array_map(function($item){
         if(is_array($item))
@@ -128,7 +131,7 @@ function getTypeOfMessage($str){
 
 function writeLog($subject, $data){
     $date = date('Y-m-d H:i:s');
-    $file = fopen('../../log/log_minute.txt','a+');
+    $file = fopen('../../log/log.txt','a+');
     $str = $date." - ".$subject." - ".$data."\n";
     fwrite($file,$str);
     fclose($file);
