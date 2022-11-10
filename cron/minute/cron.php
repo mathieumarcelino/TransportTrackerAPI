@@ -38,10 +38,63 @@ function getMessagesIDFM($key, $line, $strTransport, $strLine, $mysqli){
         if($type != 'travaux'){
             array_push($allIdMessages, $id);
             array_push($allMessages, $messages);
-            var_dump($messages);
         }
     }
-    checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli);
+    if(count($allMessages) != 0){
+        checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli);
+    }
+}
+
+function getMessagesNavitia($key, $line, $strTransport, $strLine, $mysqli){
+    $headers = array('Accept: application/json', 'Authorization: '.$key);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api.navitia.io/v1/coverage/fr-idf/lines/line%3AIDFM%3A'.$line.'/disruptions');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    
+    $result = curl_exec($ch);
+    curl_close ($ch);
+    
+    $arr = json_decode($result, true);
+    $arr = keyToLowerArr($arr);
+
+    $countMessages = count($arr['disruptions']);
+    $currentTime = formatDate($arr['context']['current_datetime']);
+    $allMessages = array();
+    $allIdMessages = array();
+
+    for($i=0; $i<$countMessages; $i++){
+        if($arr['disruptions'][$i]['status'] == 'active'){
+            $id =   hash('md2', $arr['disruptions'][$i]['disruption_id']);
+
+            $strlen = strlen($arr['disruptions'][$i]['messages'][0]['text']);
+            $text = $arr['disruptions'][$i]['messages'][0]['text'];
+            for($j=0; $j<count($arr['disruptions'][$i]['messages']); $j++){
+                $strlenCompare = strlen($arr['disruptions'][$i]['messages'][$j]['text']);
+                if($strlenCompare > $strlen){
+                    $text = urldecode(strip_tags($arr['disruptions'][$i]['messages'][$j]['text']));
+                }
+            }
+            $type = getTypeOfMessage($text);
+    
+            $messages = array(
+                'id_api' => $id,
+                'type' => $type,
+                'text' => $text,
+            );
+    
+            if($type != 'travaux'){
+                array_push($allIdMessages, $id);
+                array_push($allMessages, $messages);
+            }
+        }
+    }
+    if(count($allMessages) != 0){
+        checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli);
+    }
 }
 
 function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli){
@@ -152,49 +205,49 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
     }
 }
 
-getMessagesIDFM($key, $metro['1'], 'metro', '1', $mysqli);
-getMessagesIDFM($key, $metro['2'], 'metro', '2', $mysqli);
-getMessagesIDFM($key, $metro['3'], 'metro', '3', $mysqli);
-getMessagesIDFM($key, $metro['3bis'], 'metro', '3bis', $mysqli);
-getMessagesIDFM($key, $metro['4'], 'metro', '4', $mysqli);
-getMessagesIDFM($key, $metro['5'], 'metro', '5', $mysqli);
-getMessagesIDFM($key, $metro['6'], 'metro', '6', $mysqli);
-getMessagesIDFM($key, $metro['7'], 'metro', '7', $mysqli);
-getMessagesIDFM($key, $metro['7bis'], 'metro', '7bis', $mysqli);
-getMessagesIDFM($key, $metro['8'], 'metro', '8', $mysqli);
-getMessagesIDFM($key, $metro['9'], 'metro', '9', $mysqli);
-getMessagesIDFM($key, $metro['10'], 'metro', '10', $mysqli);
-getMessagesIDFM($key, $metro['11'], 'metro', '11', $mysqli);
-getMessagesIDFM($key, $metro['12'], 'metro', '12', $mysqli);
-getMessagesIDFM($key, $metro['13'], 'metro', '13', $mysqli);
-getMessagesIDFM($key, $metro['14'], 'metro', '14', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['1'], 'metro', '1', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['2'], 'metro', '2', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['3'], 'metro', '3', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['3bis'], 'metro', '3bis', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['4'], 'metro', '4', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['5'], 'metro', '5', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['6'], 'metro', '6', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['7'], 'metro', '7', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['7bis'], 'metro', '7bis', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['8'], 'metro', '8', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['9'], 'metro', '9', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['10'], 'metro', '10', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['11'], 'metro', '11', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['12'], 'metro', '12', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['13'], 'metro', '13', $mysqli);
+getMessagesIDFM($keyIDFM, $metro['14'], 'metro', '14', $mysqli);
 
-getMessagesIDFM($key, $rer['A'], 'rer', 'A', $mysqli);
-getMessagesIDFM($key, $rer['B'], 'rer', 'B', $mysqli);
-getMessagesIDFM($key, $rer['C'], 'rer', 'C', $mysqli);
-getMessagesIDFM($key, $rer['D'], 'rer', 'D', $mysqli);
-getMessagesIDFM($key, $rer['E'], 'rer', 'E', $mysqli);
+getMessagesIDFM($keyIDFM, $rer['A'], 'rer', 'A', $mysqli);
+getMessagesIDFM($keyIDFM, $rer['B'], 'rer', 'B', $mysqli);
+getMessagesNavitia($keyNavitia, $rer['C'], 'rer', 'C', $mysqli);
+getMessagesNavitia($keyNavitia, $rer['D'], 'rer', 'D', $mysqli);
+getMessagesNavitia($keyNavitia, $rer['E'], 'rer', 'E', $mysqli);
 
-getMessagesIDFM($key, $tramway['1'], 'tramway', '1', $mysqli);
-getMessagesIDFM($key, $tramway['2'], 'tramway', '2', $mysqli);
-getMessagesIDFM($key, $tramway['3a'], 'tramway', '3a', $mysqli);
-getMessagesIDFM($key, $tramway['3b'], 'tramway', '3b', $mysqli);
-getMessagesIDFM($key, $tramway['4'], 'tramway', '4', $mysqli);
-getMessagesIDFM($key, $tramway['5'], 'tramway', '5', $mysqli);
-getMessagesIDFM($key, $tramway['6'], 'tramway', '6', $mysqli);
-getMessagesIDFM($key, $tramway['7'], 'tramway', '7', $mysqli);
-getMessagesIDFM($key, $tramway['8'], 'tramway', '8', $mysqli);
-getMessagesIDFM($key, $tramway['9'], 'tramway', '9', $mysqli);
-getMessagesIDFM($key, $tramway['11'], 'tramway', '11', $mysqli);
-getMessagesIDFM($key, $tramway['13'], 'tramway', '13', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['1'], 'tramway', '1', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['2'], 'tramway', '2', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['3a'], 'tramway', '3a', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['3b'], 'tramway', '3b', $mysqli);
+getMessagesNavitia($keyNavitia, $tramway['4'], 'tramway', '4', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['5'], 'tramway', '5', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['6'], 'tramway', '6', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['7'], 'tramway', '7', $mysqli);
+getMessagesIDFM($keyIDFM, $tramway['8'], 'tramway', '8', $mysqli);
+getMessagesNavitia($keyNavitia, $tramway['9'], 'tramway', '9', $mysqli);
+getMessagesNavitia($keyNavitia, $tramway['11'], 'tramway', '11', $mysqli);
+getMessagesNavitia($keyNavitia, $tramway['13'], 'tramway', '13', $mysqli);
 
-getMessagesIDFM($key, $transilien['H'], 'transilien', 'H', $mysqli);
-getMessagesIDFM($key, $transilien['J'], 'transilien', 'J', $mysqli);
-getMessagesIDFM($key, $transilien['K'], 'transilien', 'K', $mysqli);
-getMessagesIDFM($key, $transilien['L'], 'transilien', 'L', $mysqli);
-getMessagesIDFM($key, $transilien['N'], 'transilien', 'N', $mysqli);
-getMessagesIDFM($key, $transilien['P'], 'transilien', 'P', $mysqli);
-getMessagesIDFM($key, $transilien['R'], 'transilien', 'R', $mysqli);
-getMessagesIDFM($key, $transilien['U'], 'transilien', 'U', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['H'], 'transilien', 'H', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['J'], 'transilien', 'J', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['K'], 'transilien', 'K', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['L'], 'transilien', 'L', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['N'], 'transilien', 'N', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['P'], 'transilien', 'P', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['R'], 'transilien', 'R', $mysqli);
+getMessagesNavitia($keyNavitia, $transilien['U'], 'transilien', 'U', $mysqli);
 
 ?>
