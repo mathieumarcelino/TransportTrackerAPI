@@ -22,9 +22,9 @@ for($i=0; $i<count($allTransports); $i++){
         $insertYearlyReportSQL = 'INSERT INTO `yearly_reports` (`id`, `transport_line`, `transport`, `line`, `year`, `first_day_time`, `last_day_time`, `total_time`) VALUES (NULL, "'.$transportLine.'", "'.$transport.'", "'.$line.'", "'.$year.'", "'.$dateFirstDay.'", "'.$dateLastDay.'", "'.$totalTime.'")';
                 
         if ($mysqli->query($insertYearlyReportSQL) === TRUE) {
-            writeLog('[OK] INSERT YEARLY REPORT', $mysqli->insert_id);
+            writeLog('report', '[OK] INSERT YEARLY REPORT', $mysqli->insert_id);
         } else {
-            writeLog('[KO] INSERT YEARLY REPORT : '.$insertYearlyReportSQL, $mysqli->error);
+            writeLog('report', '[KO] INSERT YEARLY REPORT : '.$insertYearlyReportSQL, $mysqli->error);
         }
     }
 }

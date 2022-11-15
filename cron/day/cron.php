@@ -22,9 +22,9 @@ for($i=0; $i<count($allTransports); $i++){
         $insertDailyReportSQL = 'INSERT INTO `daily_reports` (`id`, `transport_line`, `transport`, `line`, `date`, `first_day_time`, `last_day_time`, `total_time`) VALUES (NULL, "'.$transportLine.'", "'.$transport.'", "'.$line.'", "'.$date.'", "'.$dateFirstDay.'", "'.$dateLastDay.'", "'.$totalTime.'")';
                 
         if ($mysqli->query($insertDailyReportSQL) === TRUE) {
-            writeLog('[OK] INSERT DAILY REPORT', $mysqli->insert_id);
+            writeLog('report', '[OK] INSERT DAILY REPORT', $mysqli->insert_id);
         } else {
-            writeLog('[KO] INSERT DAILY REPORT : '.$insertDailyReportSQL, $mysqli->error);
+            writeLog('report', '[KO] INSERT DAILY REPORT : '.$insertDailyReportSQL, $mysqli->error);
         }
     }
 }

@@ -22,9 +22,9 @@ for($i=0; $i<count($allTransports); $i++){
         $insertWeeklyReportSQL = 'INSERT INTO `weekly_reports` (`id`, `transport_line`, `transport`, `line`, `week`, `year`, `first_day_time`, `last_day_time`, `total_time`) VALUES (NULL, "'.$transportLine.'", "'.$transport.'", "'.$line.'", "'.$week.'", "'.$year.'", "'.$dateFirstDay.'", "'.$dateLastDay.'", "'.$totalTime.'")';
                 
         if ($mysqli->query($insertWeeklyReportSQL) === TRUE) {
-            writeLog('[OK] INSERT WEEKLY REPORT', $mysqli->insert_id);
+            writeLog('report', '[OK] INSERT WEEKLY REPORT', $mysqli->insert_id);
         } else {
-            writeLog('[KO] INSERT WEEKLY REPORT : '.$insertWeeklyReportSQL, $mysqli->error);
+            writeLog('report', '[KO] INSERT WEEKLY REPORT : '.$insertWeeklyReportSQL, $mysqli->error);
         }
     }
 }

@@ -129,9 +129,9 @@ function getTypeOfMessage($str){
     }
 }
 
-function writeLog($subject, $data){
+function writeLog($file, $subject, $data){
     $date = date('Y-m-d H:i:s');
-    $file = fopen('../../log/log.txt','a+');
+    $file = fopen('../../log/'.$file.'.txt','a+');
     $str = $date." - ".$subject." - ".$data."\n";
     fwrite($file,$str);
     fclose($file);

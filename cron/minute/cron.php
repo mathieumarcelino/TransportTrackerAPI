@@ -40,9 +40,7 @@ function getMessagesIDFM($key, $line, $strTransport, $strLine, $mysqli){
             array_push($allMessages, $messages);
         }
     }
-    if(count($allMessages) != 0){
-        checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli);
-    }
+    checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli);
 }
 
 function getMessagesNavitia($key, $line, $strTransport, $strLine, $mysqli){
@@ -104,7 +102,7 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
 
     $id = '"'.implode('","', $allIdMessages).'"';
     $sqlMessage = $mysqli->query('SELECT `id`, `id_disruptions` FROM `messages` WHERE `id_api` NOT IN ('.$id.') AND `transport_line` = "'.$strTransportLine.'" AND `finished` = "0"');
-   
+
     while ($rowMessage = $sqlMessage->fetch_assoc()){
 
         array_push($allIdDistruptions, $rowMessage['id_disruptions']);
@@ -112,9 +110,9 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
         $updateMessageSQL = 'UPDATE `messages` SET `end_time` = "'.$currentTime.'", `finished` = "1" WHERE (`id` = "'.$rowMessage['id'].'")';
 
         if ($mysqli->query($updateMessageSQL) === TRUE) {
-            writeLog('[OK] UPDATE MESSAGES FINISHED', $rowMessage['id']);
+            writeLog('data', '[OK] UPDATE MESSAGES FINISHED', $rowMessage['id']);
         } else {
-            writeLog('[KO] UPDATE MESSAGES FINISHED : '.$updateMessageSQL, $mysqli->error);
+            writeLog('data', '[KO] UPDATE MESSAGES FINISHED : '.$updateMessageSQL, $mysqli->error);
         }
 
     }
@@ -136,9 +134,9 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
                 
                 if ($mysqli->query($insertDisruptionsSQL) === TRUE) {
                     $rowDisruptions['id_disruptions'] = $mysqli->insert_id;
-                    writeLog('[OK] INSERT DISRUPTIONS', $mysqli->insert_id);
+                    writeLog('data', '[OK] INSERT DISRUPTIONS', $mysqli->insert_id);
                 } else {
-                    writeLog('[KO] INSERT DISRUPTIONS : '.$insertDisruptionsSQL, $mysqli->error);
+                    writeLog('data', '[KO] INSERT DISRUPTIONS : '.$insertDisruptionsSQL, $mysqli->error);
                 }
 
             } else {
@@ -146,9 +144,9 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
                 $updateDisruptionsSQL = 'UPDATE `disruptions` SET `end_time` = NULL, `total_time` = NULL, `finished` = "0" WHERE (`id` = "'.$rowDisruptions['id_disruptions'].'")';
 
                 if ($mysqli->query($updateDisruptionsSQL) === TRUE) {
-                    writeLog('[OK] UPDATE DISRUPTIONS NOT YET FINISHED BY TIME', $rowDisruptions['id_disruptions']);
+                    writeLog('data', '[OK] UPDATE DISRUPTIONS NOT YET FINISHED BY TIME', $rowDisruptions['id_disruptions']);
                 } else {
-                    writeLog('[KO] UPDATE DISRUPTIONS NOT YET FINISHED BY TIME : '.$updateDisruptionsSQL, $mysqli->error);
+                    writeLog('data', '[KO] UPDATE DISRUPTIONS NOT YET FINISHED BY TIME : '.$updateDisruptionsSQL, $mysqli->error);
                 }
 
                 if (($key = array_search($rowDisruptions['id_disruptions'], $allIdDistruptions)) !== false){
@@ -160,9 +158,9 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
             $insertMessageSQL = 'INSERT INTO `messages` (`id`, `id_disruptions`, `id_api`, `transport_line`, `transport`, `line`, `type`, `text`, `start_time`, `end_time`, `finished`) VALUES (NULL, "'.$rowDisruptions['id_disruptions'].'", "'.$allMessages[$i]['id_api'].'", "'.$strTransportLine.'", "'.$strTransport.'", "'.$strLine.'", "'.$allMessages[$i]['type'].'", "'.$allMessages[$i]['text'].'", "'.$currentTime.'", NULL, "0")';
             
             if ($mysqli->query($insertMessageSQL) === TRUE) {
-                writeLog('[OK] INSERT MESSAGES', $mysqli->insert_id);
+                writeLog('data', '[OK] INSERT MESSAGES', $mysqli->insert_id);
             } else {
-                writeLog('[KO] INSERT MESSAGES : '.$insertMessageSQL, $mysqli->error);
+                writeLog('data', '[KO] INSERT MESSAGES : '.$insertMessageSQL, $mysqli->error);
             }
 
         } else if ($rowMessage['finished'] == 1){
@@ -170,17 +168,17 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
             $updateMessageSQL = 'UPDATE `messages` SET `end_time` = NULL, `finished` = "0" WHERE (`id` = "'.$rowMessage['id'].'")';
 
             if ($mysqli->query($updateMessageSQL) === TRUE) {
-                writeLog('[OK] UPDATE MESSAGE NOT YET FINISHED BY ID', $rowMessage['id']);
+                writeLog('data', '[OK] UPDATE MESSAGES NOT YET FINISHED BY ID', $rowMessage['id']);
             } else {
-                writeLog('[KO] UPDATE MESSAGE NOT YET FINISHED BY ID : '.$updateMessageSQL, $mysqli->error);
+                writeLog('data', '[KO] UPDATE MESSAGES NOT YET FINISHED BY ID : '.$updateMessageSQL, $mysqli->error);
             }
 
             $updateDisruptionsSQL = 'UPDATE `disruptions` SET `end_time` = NULL, `total_time` = NULL, `finished` = "0" WHERE (`id` = "'.$rowMessage['id_disruptions'].'")';
 
             if ($mysqli->query($updateDisruptionsSQL) === TRUE) {
-                writeLog('[OK] UPDATE DISRUPTIONS NOT YET FINISHED BY ID', $rowMessage['id_disruptions']);
+                writeLog('data', '[OK] UPDATE DISRUPTIONS NOT YET FINISHED BY ID', $rowMessage['id_disruptions']);
             } else {
-                writeLog('[KO] UPDATE DISRUPTIONS NOT YET FINISHED BY ID : '.$updateDisruptionsSQL, $mysqli->error);
+                writeLog('data', '[KO] UPDATE DISRUPTIONS NOT YET FINISHED BY ID : '.$updateDisruptionsSQL, $mysqli->error);
             }
 
         }
@@ -197,9 +195,9 @@ function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $curr
         $updateDisruptionsSQL = 'UPDATE `disruptions` SET `end_time` = "'.$currentTime.'", `total_time` = "'.$totalTime.'", `finished` = "1" WHERE (`id` = "'.$allIdDistruptions[$i].'")';
 
         if ($mysqli->query($updateDisruptionsSQL) === TRUE) {
-            writeLog('[OK] UPDATE DISRUPTIONS FINISHED', $allIdDistruptions[$i]);
+            writeLog('data', '[OK] UPDATE DISRUPTIONS FINISHED', $allIdDistruptions[$i]);
         } else {
-            writeLog('[KO] UPDATE DISRUPTIONS FINISHED : '.$updateDisruptionsSQL, $mysqli->error);
+            writeLog('data', '[KO] UPDATE DISRUPTIONS FINISHED : '.$updateDisruptionsSQL, $mysqli->error);
         }
 
     }

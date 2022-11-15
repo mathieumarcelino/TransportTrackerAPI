@@ -22,9 +22,9 @@ for($i=0; $i<count($allTransports); $i++){
         $insertMonthlyReportSQL = 'INSERT INTO `monthly_reports` (`id`, `transport_line`, `transport`, `line`, `month`, `year`, `first_day_time`, `last_day_time`, `total_time`) VALUES (NULL, "'.$transportLine.'", "'.$transport.'", "'.$line.'", "'.$month.'", "'.$year.'", "'.$dateFirstDay.'", "'.$dateLastDay.'", "'.$totalTime.'")';
                 
         if ($mysqli->query($insertMonthlyReportSQL) === TRUE) {
-            writeLog('[OK] INSERT MONTHLY REPORT', $mysqli->insert_id);
+            writeLog('report', '[OK] INSERT MONTHLY REPORT', $mysqli->insert_id);
         } else {
-            writeLog('[KO] INSERT MONTHLY REPORT : '.$insertMonthlyReportSQL, $mysqli->error);
+            writeLog('report', '[KO] INSERT MONTHLY REPORT : '.$insertMonthlyReportSQL, $mysqli->error);
         }
     }
 }
