@@ -90,9 +90,7 @@ function getMessagesNavitia($key, $line, $strTransport, $strLine, $mysqli){
             }
         }
     }
-    if(count($allMessages) != 0){
-        checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli);
-    }
+    checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli);
 }
 
 function checkInBDD($allMessages, $allIdMessages, $strTransport, $strLine, $currentTime, $mysqli){
